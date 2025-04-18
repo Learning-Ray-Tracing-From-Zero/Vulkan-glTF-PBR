@@ -90,7 +90,7 @@ public:
 		VkDescriptorSet skybox;
 	};
 	std::vector<DescriptorSets> descriptorSets;
-	
+
 	std::vector<VkCommandBuffer> commandBuffers;
 	std::vector<UniformBufferSet> uniformBuffers;
 
@@ -106,7 +106,7 @@ public:
 	bool animate = true;
 
 	bool displayBackground = true;
-	
+
 	struct LightSource {
 		glm::vec3 color = glm::vec3(1.0f);
 		glm::vec3 rotation = glm::vec3(75.0f, -40.0f, 0.0f);
@@ -117,7 +117,7 @@ public:
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 	const std::string assetpath = "";
 #else
-	const std::string assetpath = "./../data/";
+	const std::string assetpath = "./data/";
 #endif
 
 	enum PBRWorkflows{ PBR_WORKFLOW_METALLIC_ROUGHNESS = 0, PBR_WORKFLOW_SPECULAR_GLOSSINESS = 1 };
@@ -548,7 +548,7 @@ public:
 			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, (4 + meshCount) * swapChain.imageCount },
 			{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, imageSamplerCount * swapChain.imageCount },
 			// One SSBO for the shader material buffer
-			{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 } 
+			{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 }
 		};
 		VkDescriptorPoolCreateInfo descriptorPoolCI{};
 		descriptorPoolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -908,11 +908,11 @@ public:
 	void preparePipelines()
 	{
 		// Skybox pipeline (background cube)
-		addPipelineSet("skybox", "skybox.vert.spv", "skybox.frag.spv");
+		addPipelineSet("skybox", "./data/shaders/skybox.vert.spv", "./data/shaders/skybox.frag.spv");
 		// PBR pipelines
-		addPipelineSet("pbr", "pbr.vert.spv", "material_pbr.frag.spv");
+		addPipelineSet("pbr", "./data/shaders/pbr.vert.spv", "./data/shaders/material_pbr.frag.spv");
 		// KHR_materials_unlit
-		addPipelineSet("unlit", "pbr.vert.spv", "material_unlit.frag.spv");
+		addPipelineSet("unlit", "./data/shaders/pbr.vert.spv", "./data/shaders/material_unlit.frag.spv");
 	}
 
 	/*
@@ -1092,7 +1092,7 @@ public:
 		dynamicStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 		dynamicStateCI.pDynamicStates = dynamicStateEnables.data();
 		dynamicStateCI.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
-		
+
 		VkPipelineVertexInputStateCreateInfo emptyInputStateCI{};
 		emptyInputStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
@@ -1113,10 +1113,10 @@ public:
 		pipelineCI.stageCount = 2;
 		pipelineCI.pStages = shaderStages.data();
 
-		// Look-up-table (from BRDF) pipeline		
+		// Look-up-table (from BRDF) pipeline
 		shaderStages = {
-			loadShader(device, "genbrdflut.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			loadShader(device, "genbrdflut.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			loadShader(device, "./data/shaders/genbrdflut.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			loadShader(device, "./data/shaders/genbrdflut.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 		VkPipeline pipeline;
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipeline));
@@ -1176,7 +1176,7 @@ public:
 	}
 
 	/*
-		Offline generation for the cube maps used for PBR lighting		
+		Offline generation for the cube maps used for PBR lighting
 		- Irradiance cube map
 		- Pre-filterd environment cubemap
 	*/
@@ -1487,7 +1487,7 @@ public:
 			VkPipelineMultisampleStateCreateInfo multisampleStateCI{};
 			multisampleStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 			multisampleStateCI.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-			
+
 			std::vector<VkDynamicState> dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 			VkPipelineDynamicStateCreateInfo dynamicStateCI{};
 			dynamicStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
@@ -1523,13 +1523,13 @@ public:
 			pipelineCI.pStages = shaderStages.data();
 			pipelineCI.renderPass = renderpass;
 
-			shaderStages[0] = loadShader(device, "filtercube.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+			shaderStages[0] = loadShader(device, "./data/shaders/filtercube.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
 			switch (target) {
 				case IRRADIANCE:
-					shaderStages[1] = loadShader(device, "irradiancecube.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+					shaderStages[1] = loadShader(device, "./data/shaders/irradiancecube.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 					break;
 				case PREFILTEREDENV:
-					shaderStages[1] = loadShader(device, "prefilterenvmap.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+					shaderStages[1] = loadShader(device, "./data/shaders/prefilterenvmap.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 					break;
 			};
 			VkPipeline pipeline;
@@ -1736,7 +1736,7 @@ public:
 		}
 	}
 
-	/* 
+	/*
 		Prepare and initialize uniform buffers containing shader parameters
 	*/
 	void prepareUniformBuffers()
@@ -1754,7 +1754,7 @@ public:
 		// Scene
 		shaderValuesScene.projection = camera.matrices.perspective;
 		shaderValuesScene.view = camera.matrices.view;
-		
+
 		// Center and scale model
 		float scale = (1.0f / std::max(models.scene.aabb[0][0], std::max(models.scene.aabb[1][1], models.scene.aabb[2][2]))) * 0.5f;
 		glm::vec3 translate = -glm::vec3(models.scene.aabb[3][0], models.scene.aabb[3][1], models.scene.aabb[3][2]);
@@ -2057,7 +2057,7 @@ public:
 		else {
 			VK_CHECK_RESULT(acquire);
 		}
-		
+
 		recordCommandBuffer();
 
 		// Update UBOs

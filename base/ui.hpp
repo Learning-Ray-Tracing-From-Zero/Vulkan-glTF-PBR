@@ -225,8 +225,8 @@ public:
 
 		pipelineCI.layout = pipelineLayout;
 		shaderStages = {
-			loadShader(device, "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			loadShader(device, "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			loadShader(device, "./data/shaders/ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			loadShader(device, "./data/shaders/ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipeline));
 
@@ -234,7 +234,7 @@ public:
 			vkDestroyShaderModule(device, shaderStage.module, nullptr);
 		}
 	}
-	
+
 	~UI() {
 		ImGui::DestroyContext();
 		vertexBuffer.destroy();
